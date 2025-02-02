@@ -1,37 +1,33 @@
 import sys
 from argparse import ArgumentParser
 
-# Create the argument parser
-parser = ArgumentParser(description="Compute the percentage of each nucleotide in a DNA or RNA sequence.")
-parser.add_argument("-s", "--seq", type=str, required=True, help="Input DNA or RNA sequence")
+# Set up the argument parser
+parser = ArgumentParser(description="Calculate the percentage of nucleotides in a DNA or RNA sequence.")
+parser.add_argument("-s", "--seq", type=str, required=True, help="DNA or RNA sequence")
 args = parser.parse_args()
 
-# Convert to uppercase and validate that the sequence is valid
+# Convert the sequence to uppercase
 seq = args.seq.upper()
 
-if not all(base in 'ACGTU' for base in seq):
-    print("Error: The sequence should only contain the letters A, C, G, T (DNA) or U (RNA).")
+# Verify that the sequence contains only valid characters
+if any(base not in "ACGTU" for base in seq):
+    print("Error: The sequence should only contain A, C, G, T (DNA) or U (RNA).")
     sys.exit(1)
 
-# Function to calculate the nucleotide percentages
-def calculate_percentages(sequence):
-    total = len(sequence)
-    percentages = {
-        'A': sequence.count('A') / total * 100,
-        'C': sequence.count('C') / total * 100,
-        'G': sequence.count('G') / total * 100,
-        'T': sequence.count('T') / total * 100,
-        'U': sequence.count('U') / total * 100,
-    }
-    
-    # If the sequence is DNA, remove 'U' from the calculation
-    if 'U' not in sequence:
-        del percentages['U']
-    
-    return percentages
+# Calculate the percentage of each nucleotide
+total = len(seq)
+percentages = {base: seq.count(base) / total * 100 for base in "ACGTU"}
 
-# Calculate and display the results
-percentages = calculate_percentages(seq)
-print(f"Nucleotide percentages in the sequence:")
-for nucleotide, percentage in percentages.items():
-    print(f"{nucleotide}: {percentage:.2f}%")
+# If it's DNA, remove the percentage of U
+if "U" not in seq:
+    percentages.pop("U")
+
+# If it's RNA, remove the percentage of T
+if "T" not in seq:
+    percentages.pop("T")
+
+# Display the results
+print("Nucleotide percentages:")
+for base, percent in percentages.items():
+    print(f"{base}: {percent:.2f}%")
+
